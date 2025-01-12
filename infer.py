@@ -18,8 +18,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = opt.gpu_id
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 ###############需要改的部分
 
-save_dir = './vis/label/'
-
+save_dir = './vis/gz/'
 if not os.path.exists(save_dir):
     os.makedirs(save_dir)
 
@@ -39,7 +38,7 @@ if __name__ == '__main__':
     test_dataset = Dataset(test_dir_A, test_dir_B, test_dir_label,test_dir_edge,is_train=False)
 
     test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
-    model = torch.load('CLCD_result/epoch/SFEARNet-1e-05-8-0.001-3-100/netCD_epoch.pth').to(device)
+    model = torch.load('GZ_CD_result/epoch/SFEARNet-0.0001-8-0.001-1-100/netCD_epoch.pth').to(device)
 
     model.eval()
     test_SegmentationMetric = SegmentationMetric(numClass=n_classes)
@@ -74,7 +73,7 @@ if __name__ == '__main__':
         test_F1 = test_SegmentationMetric.F1()
         test_kappa=test_SegmentationMetric.kappa()
         print('OA:', format(test_OA, ".4f"), 'PA:',format(test_PA, ".4f"), 'recall:',format(test_recall, ".4f"), 'f1:',format(test_F1, ".4f"), 'iou:',format(test_IOU, ".4f"),  'kappa:',format(test_kappa, ".4f"),)
-        re.append([test_PA,test_PA,test_recall,test_F1,test_IOU,test_kappa])
+        re.append([test_OA,test_PA,test_recall,test_F1,test_IOU,test_kappa])
 
         data = pd.DataFrame(data=re, index=None, columns=['OA', 'PA', 'recall', 'f1', 'iou', 'kappa'])
         # #print(data)

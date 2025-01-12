@@ -8,8 +8,6 @@ import pandas as pd
 
 from loss.Diceloss import Diceloss
 from loss.Iouloss import IoULoss
-from loss.weight import caclulate_weight
-from loss.CE_weight import CELoss_Weighted
 import torch
 from model.SFEARNet import SFEARNet
 from torch.optim import lr_scheduler
@@ -48,8 +46,9 @@ lr_scheduler_model=lr_scheduler.ReduceLROnPlateau(
     )
 
 criterion_iou=IoULoss()
-weight = torch.tensor([2])  # 设置权重
-criterion_weighted_ce = CELoss_Weighted(weight=weight)
+# weight = torch.tensor([2])  # 设置权重
+# criterion_weighted_ce = CELoss_Weighted(weight=weight)
+criterion_ce=torch.nn.CrossEntropyLoss()
 criterion_dice_edge = Diceloss()
 
 
@@ -95,12 +94,14 @@ if __name__ == '__main__':
             # 前向传播
             label_pred=model_x[0]
             #print(model_x[1].size())
-            weight = caclulate_weight(label, 2).to(device)
-            criterion_weighted_ce.weight = weight
-            loss_ce_weighted = criterion_weighted_ce(label_pred, label)
+            #weight = caclulate_weight(label, 2).to(device)
+            # criterion_weighted_ce.weight = weight
+            # loss_ce_weighted = criterion_weighted_ce(label_pred, label)
+            loss_ce=criterion_ce(label_pred, label)
             loss_iou = criterion_iou(label_pred, label, 2)
             loss_dice_edge = criterion_dice_edge(model_x[1],edge,2 )
-            loss = loss_iou +loss_ce_weighted+lamda*loss_dice_edge
+            #loss = loss_iou +loss_ce_weighted+lamda*loss_dice_edge
+            loss = loss_iou + loss_ce + lamda * loss_dice_edge
             loss_sum_tain +=loss.item()
             # 反向传播和优化
             optimizer.zero_grad()
@@ -108,7 +109,7 @@ if __name__ == '__main__':
             optimizer.step()
 
             #更新权重
-            weight = torch.tensor([2])
+            #weight = torch.tensor([2])
 
             label_pred1 = torch.argmax(label_pred, dim=1)
             # print(label_pred1.size(),label.size())
@@ -157,12 +158,14 @@ if __name__ == '__main__':
                 image_A, image_B, label,edge = image_A.to(device), image_B.to(device), label.to(device),edge.to(device)
                 model_x = model(image_A, image_B)
                 label_pred=model_x[0]
-                weight = caclulate_weight(label, 2).to(device)
-                criterion_weighted_ce.weight = weight
+                # weight = caclulate_weight(label, 2).to(device)
+                # criterion_weighted_ce.weight = weight
                 loss_iou = criterion_iou(label_pred, label, 2)
-                loss_ce_weighted = criterion_weighted_ce(label_pred, label)
+                #loss_ce_weighted = criterion_weighted_ce(label_pred, label)
+                loss_ce=criterion_ce(label_pred, label)
                 loss_dice_edge = criterion_dice_edge(model_x[1], edge, 2)
-                loss = loss_iou + loss_ce_weighted + lamda * loss_dice_edge
+                # loss = loss_iou + loss_ce_weighted + lamda * loss_dice_edge
+                loss = loss_iou + loss_ce + lamda * loss_dice_edge
                 #loss = loss_dice + loss_ce_weighted
                 loss_sum_val += loss.item()
                 label_pred1 = torch.argmax(label_pred, dim=1)

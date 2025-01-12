@@ -2,9 +2,9 @@ import argparse
 parser = argparse.ArgumentParser(description='Train Change Detection Models')
 
 
-parser.add_argument('--data_dir', default=r'E:\change_detection_all\data\CLCD_256/', type=str, help='where for data.')
-parser.add_argument('--result_dir', default=r'./CLCD_result/', type=str, help='where to write.')
-parser.add_argument('--data', default=r'CLCD', type=str, help='which dataset')
+parser.add_argument('--data_dir', default=r'../LEVIR_CD_256/', type=str, help='where for data.')
+parser.add_argument('--result_dir', default=r'./LEVIR_CD_result_1/', type=str, help='where to write.')
+parser.add_argument('--data', default=r'LEVIR_CD', type=str, help='which dataset')
 
 
 parser.add_argument('--train_batchsize', default=8, type=int, help='batchsizefor train')
@@ -17,6 +17,6 @@ parser.add_argument('--lr_decline', default=r'ReduceLROnPlateau', type=str, help
 
 parser.add_argument('--weight_decay', default=1e-3,type=float ,   help='weight_decay')
 
-parser.add_argument('--lamda', default=3,type=float ,   help='edge_loss')
+parser.add_argument('--lamda', default=1,type=float ,   help='edge_loss')
 
 
