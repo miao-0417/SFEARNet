@@ -240,7 +240,7 @@ if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     input1 = torch.rand([8, 3, 256, 256]).to(device)
     input2 = torch.rand([8, 3, 256, 256]).to(device)
-    model = SFEARNet(num_classes=2, phi='b1',pretrained=False).to(device)
+    model = SFEARNet(num_classes=2, phi='b0',pretrained=False).to(device)
     out = model(input1,input2)
     print(out[0].size())
     print(out[1].size())
